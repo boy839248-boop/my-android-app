@@ -3,7 +3,7 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -14,10 +14,13 @@ jobs:
           python-version: '3.10'
 
       - name: Build with Buildozer
-        uses: jason_on_the_line/buildozer-action@v1
-        with:
-          command: buildozer android debug
-          repository_root: .
+        uses: nttld/setup-buildozer@v1
+
+      - name: Run Buildozer
+        run: |
+          pip install --upgrade pip
+          pip install cython
+          buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
