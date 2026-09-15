@@ -1,9 +1,13 @@
 name: Build Android APK
-on: [push, workflow_dispatch]
+
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -16,16 +20,23 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+          sudo apt-get install -y \
+            git zip unzip openjdk-17-jdk \
+            python3-pip autoconf libtool pkg-config \
+            zlib1g-dev libncurses5-dev libncursesw5-dev \
+            libtinfo5 cmake libffi-dev libssl-dev
 
-      - name: Run Buildozer
+      - name: Install Buildozer
         run: |
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install cython buildozer
+
+      - name: Build APK
+        run: |
           buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: package
+          name: apk
           path: bin/*.apk
